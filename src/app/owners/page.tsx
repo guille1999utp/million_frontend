@@ -83,28 +83,29 @@ export default function OwnersPage() {
         animate={{ opacity: 1, y: 0 }}
         className="backdrop-blur-sm border-b border-white/10 sticky top-0 z-50"
       >
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button onClick={() => router.back()} variant="ghost" size="sm" className="text-white hover:bg-white/10">
+        <div className="container mx-auto px-4 sm:px-6 py-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+              <Button onClick={() => router.back()} variant="ghost" size="sm" className="text-white hover:bg-white/10 w-fit">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Volver
               </Button>
-              <div>
-                <h1 className="text-xl font-semibold text-white">Propietarios</h1>
-                <p className="text-white/60 text-sm">Gestiona todos los propietarios del sistema</p>
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-xl font-semibold text-white truncate">Propietarios</h1>
+                <p className="text-white/60 text-xs sm:text-sm truncate">Gestiona todos los propietarios del sistema</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
               <Link href="/properties">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                  <Building2 className="w-4 h-4 mr-2" />
-                  Ver Propiedades
+                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 text-xs sm:text-sm">
+                  <Building2 className="w-4 h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Ver Propiedades</span>
+                  <span className="sm:hidden">Propiedades</span>
                 </Button>
               </Link>
               <Link href="/">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                  <Home className="w-4 h-4 mr-2" />
+                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 text-xs sm:text-sm">
+                  <Home className="w-4 h-4 mr-1 sm:mr-2" />
                   Inicio
                 </Button>
               </Link>

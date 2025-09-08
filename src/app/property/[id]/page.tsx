@@ -7,21 +7,20 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
-  ArrowLeft,
   MapPin,
   Calendar,
   DollarSign,
-  Home,
   User,
   History,
   ChevronLeft,
   ChevronRight,
   Maximize2,
-  Building2,
-  Users,
+  Home,
+  ArrowLeft,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
+import { GlobalHeader } from "@/components/GlobalHeader"
 import Image from "next/image"
 
 export default function PropertyDetailPage() {
@@ -104,46 +103,10 @@ export default function PropertyDetailPage() {
   return (
     <div className="min-h-screen ">
       {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className=" backdrop-blur-sm border-b border-white/10 sticky top-0 z-50"
-      >
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex md:items-center items-start md:flex-row flex-col space-x-4">
-              <Button onClick={() => router.back()} variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver
-              </Button>
-              <div>
-                <h1 className="text-xl font-semibold text-white">{property.name || 'Sin nombre'}</h1>
-                <p className="text-white/60 text-sm">{property.codeInternal || 'Sin código'}</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/owners">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                  <Users className="w-4 h-4 mr-2" />
-                  Propietarios
-                </Button>
-              </Link>
-              <Link href="/properties">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                  <Building2 className="w-4 h-4 mr-2" />
-                  Ver Propiedades
-                </Button>
-              </Link>
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                  <Home className="w-4 h-4 mr-2" />
-                  Inicio
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </motion.header>
+      <GlobalHeader
+        title={property.name || 'Sin nombre'}
+        subtitle={property.codeInternal || 'Sin código'}
+      />
 
       <div className="container mx-auto px-6 py-8 space-y-8">
         {/* Enhanced Image Carousel */}

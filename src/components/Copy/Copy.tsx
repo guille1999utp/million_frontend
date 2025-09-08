@@ -21,6 +21,20 @@ export default function Copy({ children, animateOnScroll = true, delay = 0 }: Co
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const splitRefs = useRef<any[]>([]);
   const lines = useRef<HTMLElement[]>([]);
+  const [isInitialized, setIsInitialized] = React.useState(false);
+
+  // Timeout de seguridad para asegurar que el texto sea visible
+  React.useEffect(() => {
+    const safetyTimeout = setTimeout(() => {
+      if (!isInitialized && containerRef.current) {
+        console.warn("Copy component: Safety timeout reached, showing text");
+        gsap.set(containerRef.current, { y: "0%", opacity: 1 });
+        setIsInitialized(true);
+      }
+    }, 3000); // 3 segundos de timeout
+
+    return () => clearTimeout(safetyTimeout);
+  }, [isInitialized]);
 
   const waitForFonts = async () => {
     try {
@@ -46,7 +60,8 @@ export default function Copy({ children, animateOnScroll = true, delay = 0 }: Co
       if (!containerRef.current) return;
 
       const initializeSplitText = async () => {
-        await waitForFonts();
+        try {
+          await waitForFonts();
 
         splitRefs.current = [];
         lines.current = [];
@@ -104,8 +119,18 @@ export default function Copy({ children, animateOnScroll = true, delay = 0 }: Co
               once: true,
             },
           });
-        } else {
-          gsap.to(lines.current, animationProps);
+          } else {
+            gsap.to(lines.current, animationProps);
+          }
+          
+          setIsInitialized(true);
+        } catch (error) {
+          // Fallback: si la animación falla, asegurar que el texto sea visible
+          console.warn("Copy animation failed, showing text without animation:", error);
+          if (containerRef.current) {
+            gsap.set(containerRef.current, { y: "0%", opacity: 1 });
+          }
+          setIsInitialized(true);
         }
       };
 

@@ -11,7 +11,6 @@ import Image from "next/image";
 
 import AnimatedButton from "@/components/AnimatedButton/AnimatedButton";
 import FeaturedProjects from "@/components/FeaturedProjects/FeaturedProjects";
-import Copy from "@/components/Copy/Copy";
 import { useStats } from "@/hooks";
 
 let isInitialLoad = true;
@@ -94,6 +93,12 @@ export default function Home() {
       if (!tagsRef.current) return;
 
       const tags = tagsRef.current.querySelectorAll(".what-we-do-tag");
+      
+      // Fallback: asegurar que los tags sean visibles después de 2 segundos
+      const fallbackTimeout = setTimeout(() => {
+        gsap.set(tags, { opacity: 1, x: 0 });
+      }, 2000);
+
       gsap.set(tags, { opacity: 0, x: -40 });
 
       ScrollTrigger.create({
@@ -106,8 +111,16 @@ export default function Home() {
           duration: 0.8,
           stagger: 0.1,
           ease: "power3.out",
+          onComplete: () => {
+            clearTimeout(fallbackTimeout);
+          }
         }),
       });
+
+      // Cleanup function
+      return () => {
+        clearTimeout(fallbackTimeout);
+      };
     },
     { scope: tagsRef }
   );
@@ -131,7 +144,7 @@ export default function Home() {
             >
               {/* inicia arriba (-120%) */}
               <h1 className="relative translate-y-[-120%] will-change-transform !text-[2rem] text-[var(--base-300)] !tracking-[-0.05rem]">
-                Aurelia
+                Million
               </h1>
             </div>
 
@@ -141,7 +154,7 @@ export default function Home() {
             >
               {/* inicia abajo (120%) */}
               <h1 className="relative translate-y-[120%] will-change-transform !text-[2rem] text-[var(--base-300)] !tracking-[-0.05rem]">
-                Estates
+                Properties
               </h1>
             </div>
           </div>
@@ -163,18 +176,14 @@ export default function Home() {
         <div className=" absolute bottom-0 left-0 w-full h-[50svh] z-[2] bg-[linear-gradient(360deg,rgba(20,19,19,1)_0%,rgba(20,19,19,0)_100%)]"></div>
         <div className="container">
           <div className=" absolute left-1/2 top-[50svh] -translate-x-1/2 -translate-y-1/2 text-[var(--base-100)] text-center w-full lg:w-3/4 flex flex-col justify-center items-center gap-8 p-4">
-            <Copy animateOnScroll={false} delay={showPreloader ? 4 : 0.85}>
-              <h1>Hogares y espacios con sentido, humanos y atemporales</h1>
-            </Copy>
+            <h1>Hogares y espacios con sentido, humanos y atemporales</h1>
             <div className=" w-3/4 lg:w-full text-[var(--base-200)]">
-              <Copy animateOnScroll={false} delay={showPreloader ? 4.15 : 1}>
-                <p className="md:!text-xl">
-                  En Million Properties conectamos personas e inversionistas con
-                  propiedades únicas. Diseñamos experiencias de visita claras,
-                  cálidas y centradas en el detalle para ayudarte a elegir con
-                  tranquilidad.
-                </p>
-              </Copy>
+              <p className="md:!text-xl">
+                En Million Properties conectamos personas e inversionistas con
+                propiedades únicas. Diseñamos experiencias de visita claras,
+                cálidas y centradas en el detalle para ayudarte a elegir con
+                tranquilidad.
+              </p>
             </div>
             <AnimatedButton
               label="Ver Propiedades"
@@ -185,38 +194,20 @@ export default function Home() {
           </div>
         </div>
         <div className=" absolute bottom-0 w-full z-[2]">
-          <div className="container flex flex-col lg:flex-row gap-4 w-full">
-            <div className=" flex-1 flex flex-col p-4 aspect-[16/6] lg:aspect-[16/9] text-[var(--base-200)] bg-[rgba(242,237,230,0.1)] backdrop-blur-[1rem] rounded-2xl overflow-hidden">
-              <div className="flex-1">
-                <Copy delay={0.1}>
-                  <h2 className="!text-[4rem] md:!text-[5rem]">
-                    {statsLoading ? '...' : `${totalProperties}+`}
-                  </h2>
-                </Copy>
-              </div>
-              <div className="hidden lg:block w-full h-px bg-[rgba(255,255,255,0.05)]" />
-              <div className=" flex-1 flex items-end">
-                <Copy delay={0.15}>
-                  <p className="md:!text-2xl">Propiedades publicadas</p>
-                </Copy>
-              </div>
+          <div className="container flex flex-col lg:flex-row gap-6 w-full pb-8">
+            <div className=" flex-1 flex flex-col items-center justify-center p-6 aspect-[16/8] lg:aspect-[16/10] text-[var(--base-200)] bg-gradient-to-br from-[rgba(242,237,230,0.15)] to-[rgba(242,237,230,0.05)] backdrop-blur-[1rem] rounded-2xl overflow-hidden border border-[rgba(255,255,255,0.1)] transition-all duration-300 hover:from-[rgba(242,237,230,0.2)] hover:to-[rgba(242,237,230,0.1)] hover:border-[rgba(255,255,255,0.2)] hover:scale-[1.02]">
+              <h2 className="!text-[3rem] md:!text-[4rem] font-light tracking-tight mb-4">
+                {statsLoading ? '...' : `${totalProperties}+`}
+              </h2>
+              <p className="md:!text-xl font-light text-[var(--base-300)] text-center">Propiedades publicadas</p>
             </div>
 
 
-            <div className=" flex-1 flex flex-col p-4 aspect-[16/6] lg:aspect-[16/9] text-[var(--base-200)] bg-[rgba(242,237,230,0.1)] backdrop-blur-[1rem] rounded-2xl overflow-hidden">
-              <div className=" flex-1">
-                <Copy delay={0.3}>
-                  <h2 className="!text-[4rem] md:!text-[5rem]">
-                    {statsLoading ? '...' : totalOwners}
-                  </h2>
-                </Copy>
-              </div>
-              <div className=" hidden lg:block w-full h-px bg-[rgba(255,255,255,0.05)]" />
-              <div className=" flex-1 flex items-end">
-                <Copy delay={0.35}>
-                  <p className="md:!text-2xl">Aliados interdisciplinarios</p>
-                </Copy>
-              </div>
+            <div className=" flex-1 flex flex-col items-center justify-center p-6 aspect-[16/8] lg:aspect-[16/10] text-[var(--base-200)] bg-gradient-to-br from-[rgba(242,237,230,0.15)] to-[rgba(242,237,230,0.05)] backdrop-blur-[1rem] rounded-2xl overflow-hidden border border-[rgba(255,255,255,0.1)] transition-all duration-300 hover:from-[rgba(242,237,230,0.2)] hover:to-[rgba(242,237,230,0.1)] hover:border-[rgba(255,255,255,0.2)] hover:scale-[1.02]">
+              <h2 className="!text-[3rem] md:!text-[4rem] font-light tracking-tight mb-4">
+                {statsLoading ? '...' : `${totalOwners}+`}
+              </h2>
+              <p className="md:!text-xl font-light text-[var(--base-300)] text-center">Aliados interdisciplinarios</p>
             </div>
 
           </div>
@@ -233,17 +224,13 @@ export default function Home() {
 
           <div className=" w-full flex flex-col lg:flex-row gap-8">
             <div className=" flex-1 flex flex-col gap-4 ">
-              <Copy delay={0.1}>
-                <h3>Cómo trabajamos</h3>
-              </Copy>
-              <Copy delay={0.15}>
-                <p className="lg:text-[var(--base-300)] lg:w-1/2">
-                  Abordamos cada proyecto con intención. Investigamos, iteramos
-                  y conversamos para depurar lo esencial. El resultado: lugares
-                  pensados para vivirse, con materiales honestos y detalles que
-                  acompañan el día a día.
-                </p>
-              </Copy>
+              <h3>Cómo trabajamos</h3>
+              <p className="lg:text-[var(--base-300)] lg:w-1/2">
+                Abordamos cada proyecto con intención. Investigamos, iteramos
+                y conversamos para depurar lo esencial. El resultado: lugares
+                pensados para vivirse, con materiales honestos y detalles que
+                acompañan el día a día.
+              </p>
             </div>
 
             <div className="flex-1">
@@ -275,14 +262,10 @@ export default function Home() {
       <section className="relative w-screen pt-[10rem] text-[var(--base-100)] overflow-hidden">
         <div className="container text-center">
           <div className=" text-[var(--base-350)] mb-8">
-            <Copy delay={0.1}>
-              <p>Proyectos destacados</p>
-            </Copy>
+            <p>Proyectos destacados</p>
           </div>
           <div className="w-full lg:w-1/2 mx-auto mb-8">
-            <Copy delay={0.15}>
-              <h2>Una selección de hogares y espacios recientes</h2>
-            </Copy>
+            <h2>Una selección de hogares y espacios recientes</h2>
           </div>
         </div>
 
@@ -340,13 +323,11 @@ export default function Home() {
           </div>
           <div className=" flex-1">
             <div className=" flex flex-col gap-8">
-              <Copy delay={0.1}>
-                <h3 className="">
-                  Mira de cerca los proyectos que definen nuestra práctica.
-                  Desde interiores íntimos hasta paisajes abiertos, cada imagen
-                  revela una perspectiva que puede inspirar tu próxima decisión.
-                </h3>
-              </Copy>
+              <h3 className="">
+                Mira de cerca los proyectos que definen nuestra práctica.
+                Desde interiores íntimos hasta paisajes abiertos, cada imagen
+                revela una perspectiva que puede inspirar tu próxima decisión.
+              </h3>
               <AnimatedButton label="Ver Propiedades" route="/properties" />
             </div>
           </div>

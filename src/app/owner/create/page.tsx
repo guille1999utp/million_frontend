@@ -12,9 +12,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Home, Users, Upload, Check, AlertCircle, Building2 } from "lucide-react"
+import { Upload, Check, AlertCircle, Users } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
+import { GlobalHeader } from "@/components/GlobalHeader"
 import { toast } from "sonner"
 import { ownerService } from "@/services"
 import Image from "next/image"
@@ -151,46 +152,10 @@ export default function CreateOwnerPage() {
   return (
     <div className="min-h-screen ">
       {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className=" backdrop-blur-sm border-b border-white/10 sticky top-0 z-50"
-      >
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex md:flex-row flex-col items-start md:items-center space-x-4">
-              <Button onClick={() => router.back()} variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver
-              </Button>
-              <div>
-                <h2 className="text-xl font-semibold text-white">Crear Nuevo Propietario</h2>
-                <p className="text-white/60 text-sm">Registra un nuevo propietario en el sistema</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/owners">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                  <Users className="w-4 h-4 mr-2" />
-                  Propietarios
-                </Button>
-              </Link>
-              <Link href="/properties">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                  <Building2 className="w-4 h-4 mr-2" />
-                  Ver Propiedades
-                </Button>
-              </Link>
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                  <Home className="w-4 h-4 mr-2" />
-                  Inicio
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </motion.header>
+      <GlobalHeader
+        title="Crear Nuevo Propietario"
+        subtitle="Registra un nuevo propietario en el sistema"
+      />
 
       <div className="container mx-auto px-6 py-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto">

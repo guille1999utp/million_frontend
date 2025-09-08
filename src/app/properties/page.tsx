@@ -80,7 +80,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen ">
-      <div className=" flex items-center space-x-4 gap-4 bg-[#141313] px-6 py-4">
+      <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-3 sm:gap-4 bg-[#141313] px-4 sm:px-6 py-4">
         <AnimatedButton
           label="Crear Propiedad"
           route="/property/create"
