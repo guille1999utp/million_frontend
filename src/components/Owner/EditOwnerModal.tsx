@@ -195,7 +195,7 @@ export function EditOwnerModal({ isOpen, onClose, owner, onSuccess }: EditOwnerM
                   </div>
                   <div>
                     <Label htmlFor="photo-upload" className="cursor-pointer">
-                      <div className="flex items-center justify-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors">
+                      <div className="flex items-center justify-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors w-full">
                         <Upload className="w-4 h-4" />
                         <span>Cambiar Foto</span>
                       </div>
@@ -207,7 +207,7 @@ export function EditOwnerModal({ isOpen, onClose, owner, onSuccess }: EditOwnerM
                       onChange={handlePhotoUpload}
                       className="hidden"
                     />
-                    <p className="text-white/60 text-sm mt-2">
+                    <p className="text-white/60 text-sm mt-2 text-center">
                       {selectedPhotoFile ? (
                         <span className="text-green-400">
                           ✓ Nueva foto seleccionada: {selectedPhotoFile.name}

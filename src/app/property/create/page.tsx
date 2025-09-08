@@ -446,7 +446,7 @@ function CreatePropertyPageContent() {
               <CardContent className="space-y-6">
                 <div>
                   <Label htmlFor="images-upload" className="cursor-pointer">
-                    <div className="border-2 border-dashed border-white/20 hover:border-white/40 rounded-lg p-8 text-center transition-colors">
+                    <div className="border-2 border-dashed border-white/20 hover:border-white/40 rounded-lg p-8 text-center transition-colors w-full">
                       <Upload className="w-12 h-12 text-white/40 mx-auto mb-4" />
                       <p className="text-white mb-2">Haz clic para subir imágenes</p>
                       <p className="text-white/60 text-sm">JPG, PNG hasta 2MB cada una</p>
