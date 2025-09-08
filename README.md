@@ -42,7 +42,21 @@ Una plataforma web moderna y elegante para la gestión y visualización de propi
    bun install
    ```
 
-3. **Ejecutar en modo desarrollo**
+3. **Configurar variables de entorno**
+   
+   Crea un archivo `.env` en la raíz del proyecto con la siguiente configuración:
+   
+   ```env
+   # URL de la API backend
+   NEXT_PUBLIC_API_URL=http://localhost:3001/api
+   ```
+   
+   **Nota**: Si estás usando la API de producción, cambia la URL por:
+   ```env
+   NEXT_PUBLIC_API_URL=https://api-million-htf4bghdfsd5eadt.canadacentral-01.azurewebsites.net/api
+   ```
+
+4. **Ejecutar en modo desarrollo**
    ```bash
    npm run dev
    # o
@@ -53,7 +67,7 @@ Una plataforma web moderna y elegante para la gestión y visualización de propi
    bun dev
    ```
 
-4. **Abrir en el navegador**
+5. **Abrir en el navegador**
    
    Navega a [http://localhost:3000](http://localhost:3000) para ver la aplicación.
 
@@ -114,11 +128,41 @@ src/
 └── lib/                   # Utilidades y configuración
 ```
 
+## ⚙️ Configuración de Variables de Entorno
+
+La aplicación utiliza variables de entorno para configurar la conexión con la API backend.
+
+### Variables Requeridas
+
+| Variable | Descripción | Valor por Defecto |
+|----------|-------------|-------------------|
+| `NEXT_PUBLIC_API_URL` | URL base de la API backend | `http://localhost:3001/api` |
+
+### Configuración para Desarrollo
+
+```env
+# .env
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+```
+
+### Configuración para Producción
+
+```env
+# .env
+NEXT_PUBLIC_API_URL=https://api-million-htf4bghdfsd5eadt.canadacentral-01.azurewebsites.net/api
+```
+
+### Importante
+
+- El archivo `.env` debe estar en la raíz del proyecto
+- Las variables que empiezan con `NEXT_PUBLIC_` son accesibles en el cliente
+- No incluyas el archivo `.env` en el control de versiones (ya está en `.gitignore`)
+
 ## 🔌 API Integration
 
 La aplicación se conecta a una API REST externa para la gestión de datos:
 
-- **Base URL**: `https://api-million-htf4bghdfsd5eadt.canadacentral-01.azurewebsites.net`
+- **Base URL**: Configurable via `NEXT_PUBLIC_API_URL`
 - **Endpoints principales**:
   - `GET/POST/PUT/DELETE /Owner` - Gestión de propietarios
   - `GET/POST/PUT/DELETE /Property` - Gestión de propiedades
