@@ -49,7 +49,7 @@ export default function PropertyDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <h2 className="text-2xl font-light text-white">Propiedad no encontrada</h2>
-          <p className="text-white/60">{error || 'La propiedad solicitada no existe'}</p>
+          <p className="text-white/60">{error ? (typeof error === 'string' ? error : 'Error desconocido') : 'La propiedad solicitada no existe'}</p>
           <Link href="/">
             <Button variant="outline" className="border-white/20 bg-white/5 text-white hover:bg-white/10">
               Volver al inicio

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import CTAWindow from "@/components/CTAWindow";
+import { ReduxProvider } from "@/store/ReduxProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -87,13 +88,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-         <CTAWindow
-        img="/home/home-cta-window.jpg"
-        header="Million Properties"
-        callout="Espacios que respiran con el tiempo"
-        description="Nuestro enfoque se guía por el ritmo, la proporción y la luz, permitiendo que cada ambiente gane significado a medida que se vive."
-      />
+        <ReduxProvider>
+          {children}
+          <CTAWindow
+            img="/home/home-cta-window.jpg"
+            header="Million Properties"
+            callout="Espacios que respiran con el tiempo"
+            description="Nuestro enfoque se guía por el ritmo, la proporción y la luz, permitiendo que cada ambiente gane significado a medida que se vive."
+          />
+        </ReduxProvider>
       </body>
     </html>
   );

@@ -66,7 +66,7 @@ export default function OwnersPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <h2 className="text-2xl font-light text-white">Error al cargar propietarios</h2>
-          <p className="text-white/60">{error}</p>
+          <p className="text-white/60">{error ? (typeof error === 'string' ? error : 'Error desconocido') : 'Error al cargar propietarios'}</p>
           <Button onClick={() => refetch()} variant="outline" className="border-white/20 bg-white/5 text-white hover:bg-white/10">
             Reintentar
           </Button>

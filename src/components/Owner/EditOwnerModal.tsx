@@ -129,9 +129,9 @@ export function EditOwnerModal({ isOpen, onClose, owner, onSuccess }: EditOwnerM
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // Validar tamaño del archivo (5MB máximo)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("El archivo debe ser menor a 5MB")
+      // Validar tamaño del archivo (2MB máximo)
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("El archivo debe ser menor a 2MB")
         return
       }
 
@@ -213,7 +213,7 @@ export function EditOwnerModal({ isOpen, onClose, owner, onSuccess }: EditOwnerM
                           ✓ Nueva foto seleccionada: {selectedPhotoFile.name}
                         </span>
                       ) : (
-                        "Opcional - JPG, PNG hasta 5MB"
+                        "Opcional - JPG, PNG hasta 2MB"
                       )}
                     </p>
                   </div>

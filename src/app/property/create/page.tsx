@@ -19,7 +19,7 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { GlobalHeader } from "@/components/GlobalHeader"
 import { toast } from "sonner"
-import { useOwners } from "@/hooks"
+import { useOwners, usePropertyMutations } from "@/hooks"
 import Image from "next/image"
 
 const propertySchema = z.object({
@@ -34,7 +34,7 @@ const propertySchema = z.object({
   price: z
     .number()
     .min(1000000, "El precio debe ser mayor a $1.000.000")
-    .max(10000000000, "El precio no puede exceder $10.000.000.000"),
+    .max(1000000000, "El precio no puede exceder $1.000.000.000"),
   codeInternal: z
     .string()
     .min(3, "El código debe tener al menos 3 caracteres")
@@ -48,9 +48,12 @@ const propertySchema = z.object({
     .array(
       z.object({
         name: z.string().min(1, "El nombre de la transacción es requerido"),
-        value: z.number().min(0, "El valor debe ser mayor o igual a 0"),
+        value: z.number().min(1, "El valor debe ser mayor a 0"),
         tax: z.number().min(0, "El impuesto debe ser mayor o igual a 0"),
         dateSale: z.string().min(1, "La fecha es requerida"),
+      }).refine((data) => data.tax <= data.value, {
+        message: "El impuesto no puede ser mayor al valor",
+        path: ["tax"],
       }),
     )
     .optional(),
@@ -69,6 +72,9 @@ function CreatePropertyPageContent() {
   
   // Obtener lista de propietarios desde la API
   const { owners, loading: ownersLoading, error: ownersError } = useOwners()
+  
+  // Obtener mutaciones de Redux
+  const { createProperty, uploadPropertyImage, createPropertyTrace } = usePropertyMutations()
 
   console.log(owners)
 
@@ -121,9 +127,9 @@ function CreatePropertyPageContent() {
         return
       }
       
-      // Validar tamaño (5MB máximo)
+      // Validar tamaño (2MB máximo)
       if (file.size > 2 * 1024 * 1024) {
-        toast.error(`La imagen ${file.name} es demasiado grande (máximo 5MB)`)
+        toast.error(`La imagen ${file.name} es demasiado grande (máximo 2MB)`)
         return
       }
       
@@ -164,16 +170,15 @@ function CreatePropertyPageContent() {
       console.log("Creando propiedad con datos:", data)
       setSubmissionStep("Creando propiedad...")
 
-      // Llamar al servicio de API para crear la propiedad
-      const propertyService = (await import("@/services")).propertyService
-      const createdProperty = await propertyService.createProperty({
+      // Crear la propiedad usando Redux
+      const createdProperty = await createProperty({
         name: data.name,
         address: data.address,
         price: data.price,
         codeInternal: data.codeInternal,
         year: data.year,
         idOwner: data.idOwner,
-      })
+      }).unwrap()
 
       if (!createdProperty || !createdProperty.id) {
         throw new Error("No se pudo crear la propiedad")
@@ -185,22 +190,17 @@ function CreatePropertyPageContent() {
       if (selectedImages.length > 0) {
         setSubmissionStep("Subiendo imágenes...")
         
-        const propertyImageService = (await import("@/services")).propertyImageService
         let uploadedImages = 0
         let failedImages = 0
 
         for (const imageFile of selectedImages) {
           try {
-            const uploadResult = await propertyImageService.uploadPropertyImage(
-              createdProperty.id,
-              imageFile,
-              true
-            )
-            if (uploadResult) {
-              uploadedImages++
-            } else {
-              failedImages++
-            }
+            await uploadPropertyImage({
+              propertyId: createdProperty.id,
+              file: imageFile,
+              isPrimary: uploadedImages === 0 // La primera imagen es la principal
+            }).unwrap()
+            uploadedImages++
           } catch (error) {
             console.error("Error al subir imagen:", error)
             failedImages++
@@ -218,7 +218,6 @@ function CreatePropertyPageContent() {
       if (data.traces && data.traces.length > 0) {
         setSubmissionStep("Creando transacciones...")
         
-        const propertyTraceService = (await import("@/services")).propertyTraceService
         let createdTraces = 0
         let failedTraces = 0
 
@@ -232,12 +231,8 @@ function CreatePropertyPageContent() {
               idProperty: createdProperty.id,
             }
 
-            const traceResult = await propertyTraceService.createPropertyTrace(traceData)
-            if (traceResult) {
-              createdTraces++
-            } else {
-              failedTraces++
-            }
+            await createPropertyTrace(traceData).unwrap()
+            createdTraces++
           } catch (error) {
             console.error("Error al crear trace:", error)
             failedTraces++
@@ -297,7 +292,7 @@ function CreatePropertyPageContent() {
                       id="name"
                       {...register("name")}
                       placeholder="Ej: Villa Moderna en Las Condes"
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400"
+                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-amber-400"
                     />
                     {errors.name && (
                       <div className="flex items-center space-x-2 text-red-400 text-sm">
@@ -316,7 +311,7 @@ function CreatePropertyPageContent() {
                       id="codeInternal"
                       {...register("codeInternal")}
                       placeholder="Ej: LC-VM-001"
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400"
+                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-amber-400"
                     />
                     {errors.codeInternal && (
                       <div className="flex items-center space-x-2 text-red-400 text-sm">
@@ -334,7 +329,7 @@ function CreatePropertyPageContent() {
                       defaultValue={preselectedOwnerId || ""}
                       disabled={ownersLoading}
                     >
-                      <SelectTrigger className="bg-white/5 border-white/20 text-white focus:border-emerald-400">
+                      <SelectTrigger className="w-full bg-white/5 border-white/20 text-white focus:border-amber-400">
                         <SelectValue placeholder={ownersLoading ? "Cargando propietarios..." : "Seleccionar propietario"} />
                       </SelectTrigger>
                       <SelectContent className="bg-black/90 border-white/20 backdrop-blur-sm">
@@ -372,7 +367,7 @@ function CreatePropertyPageContent() {
                     {ownersError && (
                       <div className="flex items-center space-x-2 text-red-400 text-sm">
                         <AlertCircle className="w-4 h-4" />
-                        <span>Error al cargar propietarios: {ownersError}</span>
+                        <span>Error al cargar propietarios: {ownersError ? (typeof ownersError === 'string' ? ownersError : 'Error desconocido') : 'Error desconocido'}</span>
                       </div>
                     )}
                   </div>
@@ -388,7 +383,7 @@ function CreatePropertyPageContent() {
                       type="number"
                       {...register("price", { valueAsNumber: true })}
                       placeholder="Ej: 850000000"
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400"
+                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-amber-400"
                     />
                     {errors.price && (
                       <div className="flex items-center space-x-2 text-red-400 text-sm">
@@ -408,7 +403,7 @@ function CreatePropertyPageContent() {
                       type="number"
                       {...register("year", { valueAsNumber: true })}
                       placeholder="Ej: 2020"
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400"
+                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-amber-400"
                     />
                     {errors.year && (
                       <div className="flex items-center space-x-2 text-red-400 text-sm">
@@ -427,7 +422,7 @@ function CreatePropertyPageContent() {
                       id="address"
                       {...register("address")}
                       placeholder="Ej: Av. Las Condes 12450, Las Condes, Santiago"
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400 min-h-[80px]"
+                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-amber-400 min-h-[80px]"
                     />
                     {errors.address && (
                       <div className="flex items-center space-x-2 text-red-400 text-sm">
@@ -506,7 +501,7 @@ function CreatePropertyPageContent() {
               <CardHeader>
                 <CardTitle className="text-white flex items-center justify-between">
                   <span>Historial de Transacciones</span>
-                  <Button type="button" onClick={addTrace} size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                  <Button type="button" onClick={addTrace} size="sm" className="bg-amber-600 hover:bg-amber-700">
                     <Plus className="w-4 h-4 mr-2" />
                     Agregar Transacción
                   </Button>
@@ -535,16 +530,28 @@ function CreatePropertyPageContent() {
                             <Input
                               {...register(`traces.${index}.name`)}
                               placeholder="Ej: Compra inicial"
-                              className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400"
+                              className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-amber-400"
                             />
+                            {errors.traces?.[index]?.name && (
+                              <div className="flex items-center space-x-2 text-red-400 text-sm">
+                                <AlertCircle className="w-4 h-4" />
+                                <span>{errors.traces[index]?.name?.message}</span>
+                              </div>
+                            )}
                           </div>
                           <div className="space-y-2">
                             <Label className="text-white">Fecha</Label>
                             <Input
                               type="date"
                               {...register(`traces.${index}.dateSale`)}
-                              className="bg-white/5 border-white/20 text-white focus:border-emerald-400"
+                              className="bg-white/5 border-white/20 text-white focus:border-amber-400"
                             />
+                            {errors.traces?.[index]?.dateSale && (
+                              <div className="flex items-center space-x-2 text-red-400 text-sm">
+                                <AlertCircle className="w-4 h-4" />
+                                <span>{errors.traces[index]?.dateSale?.message}</span>
+                              </div>
+                            )}
                           </div>
                           <div className="space-y-2">
                             <Label className="text-white">Valor (CLP)</Label>
@@ -552,8 +559,14 @@ function CreatePropertyPageContent() {
                               type="number"
                               {...register(`traces.${index}.value`, { valueAsNumber: true })}
                               placeholder="0"
-                              className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400"
+                              className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-amber-400"
                             />
+                            {errors.traces?.[index]?.value && (
+                              <div className="flex items-center space-x-2 text-red-400 text-sm">
+                                <AlertCircle className="w-4 h-4" />
+                                <span>{errors.traces[index]?.value?.message}</span>
+                              </div>
+                            )}
                           </div>
                           <div className="space-y-2">
                             <Label className="text-white">Impuesto (CLP)</Label>
@@ -561,8 +574,14 @@ function CreatePropertyPageContent() {
                               type="number"
                               {...register(`traces.${index}.tax`, { valueAsNumber: true })}
                               placeholder="0"
-                              className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400"
+                              className="bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-amber-400"
                             />
+                            {errors.traces?.[index]?.tax && (
+                              <div className="flex items-center space-x-2 text-red-400 text-sm">
+                                <AlertCircle className="w-4 h-4" />
+                                <span>{errors.traces[index]?.tax?.message}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -589,7 +608,7 @@ function CreatePropertyPageContent() {
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (

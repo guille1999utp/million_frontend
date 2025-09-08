@@ -24,7 +24,7 @@ import { useOwnerWithProperties } from "@/hooks"
 import { EditOwnerModal, DeleteOwnerModal } from "@/components/Owner"
 import { DeletePropertyModal, EditPropertyModal } from "@/components/Property"
 import { useState } from "react"
-import { PropertyWithDetailsDto } from "@/services/types"
+import { OwnerWithPropertiesDto, PropertyWithDetailsDto } from "@/services/types"
 
 export default function OwnerDetailPage() {
   const params = useParams()
@@ -55,7 +55,7 @@ export default function OwnerDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-light text-white">Propietario no encontrado</h1>
-          <p className="text-white/60">{error || 'El propietario solicitado no existe'}</p>
+          <p className="text-white/60">{error ? (typeof error === 'string' ? error : 'Error desconocido') : 'El propietario solicitado no existe'}</p>
           <Link href="/">
             <Button variant="outline" className="border-white/20 bg-white/5 text-white hover:bg-white/10">
               Volver al inicio
@@ -67,7 +67,7 @@ export default function OwnerDetailPage() {
   }
 
   // Obtener propiedades del owner
-  const properties = owner.properties || []
+  const properties = (owner as unknown as OwnerWithPropertiesDto).properties || []
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("es-CL", {
@@ -92,11 +92,11 @@ export default function OwnerDetailPage() {
     })
   }
 
-  const totalValue = properties.reduce((sum, property) => sum + (property.price || 0), 0)
+  const totalValue = properties.reduce((sum: number, property: any) => sum + (property.price || 0), 0)
   const averagePrice = properties.length > 0 ? totalValue / properties.length : 0
 
   // Calculate total transactions from traces
-  const allTraces = properties.flatMap((property) => property.traces || [])
+  const allTraces = properties.flatMap((property: any) => property.traces || [])
   const totalTransactions = allTraces.length
 
   return (
@@ -115,9 +115,9 @@ export default function OwnerDetailPage() {
             <CardContent className="relative p-8">
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="w-32 h-32 bg-white/10 rounded-full flex items-center justify-center overflow-hidden border-4 border-white/20">
-                  {owner.photo ? (
+                  {(owner as unknown as OwnerWithPropertiesDto).photo ? (
                     <Image
-                      src={owner.photo || "/placeholder.svg"}
+                      src={(owner as unknown as OwnerWithPropertiesDto).photo || "/placeholder.svg"}
                       alt={owner.name || "Propietario"}
                       width={128}
                       height={128}
@@ -143,7 +143,7 @@ export default function OwnerDetailPage() {
                     </div>
                     <div className="flex items-center space-x-3">
                       <Calendar className="w-5 h-5 text-amber-400" />
-                      <span>Nacimiento: {formatDate(owner.birthday)}</span>
+                      <span>Nacimiento: {formatDate((owner as unknown as OwnerWithPropertiesDto).birthday)}</span>
                     </div>
       
                   </div>
@@ -267,7 +267,7 @@ export default function OwnerDetailPage() {
               <CardContent>
                 {properties.length > 0 ? (
                   <div className="space-y-4">
-                    {properties.map((property, index) => {
+                    {properties.map((property: any, index: number) => {
                       const primaryImage = property.images && property.images.length > 0 ? property.images[0] : null
                       const latestTrace = property.traces && property.traces.length > 0 ? property.traces[0] : null
 
@@ -386,7 +386,7 @@ export default function OwnerDetailPage() {
         <EditOwnerModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
-          owner={owner}
+          owner={owner as unknown as OwnerWithPropertiesDto}
           onSuccess={() => {
             refetch()
             setIsEditModalOpen(false)
@@ -399,7 +399,7 @@ export default function OwnerDetailPage() {
         <DeleteOwnerModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
-          owner={owner}
+          owner={owner as unknown as OwnerWithPropertiesDto}
           onSuccess={() => {
             // Redirigir al inicio después de eliminar
             router.push('/')

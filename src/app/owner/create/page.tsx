@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Upload, Check, AlertCircle, Users } from "lucide-react"
 import { motion } from "framer-motion"
-import Link from "next/link"
 import { GlobalHeader } from "@/components/GlobalHeader"
 import { toast } from "sonner"
 import { ownerService } from "@/services"
@@ -79,16 +78,12 @@ export default function CreateOwnerPage() {
         photo: "", // String vacío como especificaste
         birthday: new Date(data.birthday).toISOString()
       }
-
-      console.log("Creando propietario con datos:", ownerData)
       
       const createdOwner = await ownerService.createOwner(ownerData)
       
       if (!createdOwner || !createdOwner.id) {
         throw new Error("No se pudo crear el propietario")
       }
-
-      console.log("Propietario creado exitosamente:", createdOwner)
 
       // Paso 2: Subir la foto si se seleccionó una
       if (selectedPhotoFile && createdOwner.id) {
@@ -121,9 +116,9 @@ export default function CreateOwnerPage() {
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // Validar tamaño del archivo (5MB máximo)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("El archivo debe ser menor a 5MB")
+      // Validar tamaño del archivo (2MB máximo)
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("El archivo debe ser menor a 2MB")
         return
       }
 
@@ -185,7 +180,7 @@ export default function CreateOwnerPage() {
                           <Users className="w-12 h-12 text-white/40" />
                         )}
                       </div>
-                      <div>
+                      <div className="flex flex-col items-center space-y-2">
                         <Label htmlFor="photo-upload" className="cursor-pointer">
                           <div className="flex items-center justify-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors">
                             <Upload className="w-4 h-4" />
@@ -199,9 +194,9 @@ export default function CreateOwnerPage() {
                           onChange={handlePhotoUpload}
                           className="hidden"
                         />
-                        <p className="text-white/60 text-sm mt-2">
+                        <p className="text-white/60 text-sm text-center">
                           {selectedPhotoFile ? (
-                            <div className="space-y-2">
+                            <div className="space-y-2 flex flex-col items-center">
                               <span className="text-green-400 block">
                                 ✓ Foto seleccionada: {selectedPhotoFile.name}
                               </span>
@@ -220,7 +215,7 @@ export default function CreateOwnerPage() {
                               </Button>
                             </div>
                           ) : (
-                            "Opcional - JPG, PNG hasta 5MB"
+                            "Opcional - JPG, PNG hasta 2MB"
                           )}
                         </p>
                       </div>

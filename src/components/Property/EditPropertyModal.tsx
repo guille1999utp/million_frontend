@@ -14,12 +14,25 @@ import {
   ImageIcon, 
   Trash2, 
   Edit,
-  Check
+  Check,
+  AlertCircle
 } from "lucide-react"
 import { toast } from "sonner"
 import { propertyService, propertyImageService, propertyTraceService } from "@/services"
 import { PropertyWithDetailsDto } from "@/services/types"
 import Image from "next/image"
+import { z } from "zod"
+
+// Schema de validación para PropertyTrace
+const traceSchema = z.object({
+  name: z.string().min(1, "El nombre de la transacción es requerido"),
+  value: z.number().min(1, "El valor debe ser mayor a 0"),
+  tax: z.number().min(0, "El impuesto debe ser mayor o igual a 0"),
+  dateSale: z.string().min(1, "La fecha es requerida"),
+}).refine((data) => data.tax <= data.value, {
+  message: "El impuesto no puede ser mayor al valor",
+  path: ["tax"],
+})
 
 interface EditPropertyModalProps {
   isOpen: boolean
@@ -46,6 +59,12 @@ export function EditPropertyModal({ isOpen, onClose, property, onSuccess }: Edit
     tax: 0,
     dateSale: new Date().toISOString().split("T")[0],
   })
+  const [traceErrors, setTraceErrors] = useState<{
+    name?: string
+    value?: string
+    tax?: string
+    dateSale?: string
+  }>({})
 
   // Estados para información básica
   const [propertyData, setPropertyData] = useState({
@@ -126,8 +145,41 @@ export function EditPropertyModal({ isOpen, onClose, property, onSuccess }: Edit
     }
   }
 
+  // Función para validar trace
+  const validateTrace = (trace: typeof newTrace) => {
+    try {
+      traceSchema.parse(trace)
+      setTraceErrors({})
+      return true
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: typeof traceErrors = {}
+        error.issues.forEach((err: z.ZodIssue) => {
+          if (err.path[0]) {
+            errors[err.path[0] as keyof typeof errors] = err.message
+          }
+        })
+        setTraceErrors(errors)
+      }
+      return false
+    }
+  }
+
+  // Función para actualizar trace con validación
+  const updateNewTrace = (field: keyof typeof newTrace, value: string | number) => {
+    const updatedTrace = { ...newTrace, [field]: value }
+    setNewTrace(updatedTrace)
+    
+    // Validar en tiempo real si hay algún valor
+    if (updatedTrace.name.trim() || updatedTrace.value > 0 || updatedTrace.tax > 0 || updatedTrace.dateSale) {
+      validateTrace(updatedTrace)
+    } else {
+      setTraceErrors({}) // Limpiar errores si está vacío
+    }
+  }
+
   const addTrace = () => {
-    if (newTrace.name.trim()) {
+    if (validateTrace(newTrace)) {
       setTraces(prev => [...prev, { ...newTrace, id: `temp-${Date.now()}` }])
       setHasChanges(true) // Marcar que hubo cambios
       setNewTrace({
@@ -136,6 +188,7 @@ export function EditPropertyModal({ isOpen, onClose, property, onSuccess }: Edit
         tax: 0,
         dateSale: new Date().toISOString().split("T")[0],
       })
+      setTraceErrors({}) // Limpiar errores
     }
   }
 
@@ -389,7 +442,7 @@ export function EditPropertyModal({ isOpen, onClose, property, onSuccess }: Edit
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="new-images-upload" className="cursor-pointer">
-                  <div className="border-2 border-dashed border-white/20 hover:border-white/40 rounded-lg p-6 text-center transition-colors">
+                  <div className="border-2 border-dashed border-white/20 hover:border-white/40 rounded-lg p-6 text-center transition-colors  w-full">
                     <Upload className="w-8 h-8 text-white/40 mx-auto mb-2" />
                     <p className="text-white text-sm">Haz clic para subir nuevas imágenes</p>
                     <p className="text-white/60 text-xs">JPG, PNG hasta 2MB cada una</p>
@@ -481,43 +534,69 @@ export function EditPropertyModal({ isOpen, onClose, property, onSuccess }: Edit
                   <Label className="text-white">Nombre</Label>
                   <Input
                     value={newTrace.name}
-                    onChange={(e) => setNewTrace(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => updateNewTrace('name', e.target.value)}
                     placeholder="Ej: Compra inicial"
-                    className="bg-white/5 border-white/20 text-white"
+                    className="bg-white/5 border-white/20 text-white focus:border-amber-400"
                   />
+                  {traceErrors.name && (
+                    <div className="flex items-center space-x-2 text-red-400 text-sm">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>{traceErrors.name}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-white">Fecha</Label>
                   <Input
                     type="date"
                     value={newTrace.dateSale}
-                    onChange={(e) => setNewTrace(prev => ({ ...prev, dateSale: e.target.value }))}
-                    className="bg-white/5 border-white/20 text-white"
+                    onChange={(e) => updateNewTrace('dateSale', e.target.value)}
+                    className="bg-white/5 border-white/20 text-white focus:border-amber-400"
                   />
+                  {traceErrors.dateSale && (
+                    <div className="flex items-center space-x-2 text-red-400 text-sm">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>{traceErrors.dateSale}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-white">Valor (CLP)</Label>
                   <Input
                     type="number"
                     value={newTrace.value}
-                    onChange={(e) => setNewTrace(prev => ({ ...prev, value: Number(e.target.value) }))}
-                    className="bg-white/5 border-white/20 text-white"
+                    onChange={(e) => updateNewTrace('value', Number(e.target.value))}
+                    placeholder="0"
+                    className="bg-white/5 border-white/20 text-white focus:border-amber-400"
                   />
+                  {traceErrors.value && (
+                    <div className="flex items-center space-x-2 text-red-400 text-sm">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>{traceErrors.value}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-white">Impuesto (CLP)</Label>
                   <Input
                     type="number"
                     value={newTrace.tax}
-                    onChange={(e) => setNewTrace(prev => ({ ...prev, tax: Number(e.target.value) }))}
-                    className="bg-white/5 border-white/20 text-white"
+                    onChange={(e) => updateNewTrace('tax', Number(e.target.value))}
+                    placeholder="0"
+                    className="bg-white/5 border-white/20 text-white focus:border-amber-400"
                   />
+                  {traceErrors.tax && (
+                    <div className="flex items-center space-x-2 text-red-400 text-sm">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>{traceErrors.tax}</span>
+                    </div>
+                  )}
                 </div>
               </div>
               <Button
                 onClick={addTrace}
                 disabled={!newTrace.name.trim()}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-amber-600 hover:bg-amber-700 text-white"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Agregar Transacción
@@ -540,7 +619,7 @@ export function EditPropertyModal({ isOpen, onClose, property, onSuccess }: Edit
             <Button
               type="button"
               onClick={handleSubmit}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
