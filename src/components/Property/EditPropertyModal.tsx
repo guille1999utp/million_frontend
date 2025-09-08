@@ -26,7 +26,7 @@ import { z } from "zod"
 // Schema de validación para PropertyTrace
 const traceSchema = z.object({
   name: z.string().min(1, "El nombre de la transacción es requerido"),
-  value: z.number().min(1, "El valor debe ser mayor a 0"),
+  value: z.number().min(1, "El valor debe ser mayor a 0").max(1000000000, "El valor no puede exceder $1.000.000.000"),
   tax: z.number().min(0, "El impuesto debe ser mayor o igual a 0"),
   dateSale: z.string().min(1, "La fecha es requerida"),
 }).refine((data) => data.tax <= data.value, {
