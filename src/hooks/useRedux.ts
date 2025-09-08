@@ -1,10 +1,10 @@
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
+import { Owner, Property } from '@/interfaces'
 import { 
   useGetOwnersQuery,
   useGetOwnerByIdQuery,
   useGetPropertiesQuery,
   useGetPropertyByIdQuery,
-  useGetStatsQuery,
   useCreateOwnerMutation,
   useUpdateOwnerMutation,
   useDeleteOwnerMutation,
@@ -43,14 +43,14 @@ export const useOwnerWithProperties = (ownerId: string) => {
 }
 
 // Reemplaza useProperties
-export const useProperties = (filters?: any) => {
+export const useProperties = (filters?: { Name?: string; MinPrice?: number; MaxPrice?: number }) => {
   const { data, isLoading: loading, error } = useGetPropertiesQuery({
     search: filters?.Name || undefined,
     filters: {
       minPrice: filters?.MinPrice,
       maxPrice: filters?.MaxPrice,
-      year: null,
-      ownerId: null,
+      year: undefined,
+      ownerId: undefined,
     },
   })
   
@@ -60,19 +60,24 @@ export const useProperties = (filters?: any) => {
   return { 
     properties, 
     loading, 
-    error: error ? (error as any)?.message || 'Error al cargar propiedades' : null,
+    error: error ? (error as { message?: string })?.message || 'Error al cargar propiedades' : null,
     totalCount,
     refetch: () => {} // Placeholder para compatibilidad
   }
 }
 
 // Reemplaza usePropertiesWithDebounce
-export const usePropertiesWithDebounce = (searchTerm: string, debounceMs: number = 500) => {
+export const usePropertiesWithDebounce = (searchTerm: string) => {
   const propertyFilters = useAppSelector(state => state.ui.propertyFilters)
   
   const { data: properties = [], isLoading: loading, error } = useGetPropertiesQuery({
     search: searchTerm || undefined,
-    filters: propertyFilters,
+    filters: {
+      minPrice: propertyFilters.minPrice ?? undefined,
+      maxPrice: propertyFilters.maxPrice ?? undefined,
+      year: propertyFilters.year ?? undefined,
+      ownerId: propertyFilters.ownerId ?? undefined,
+    },
   })
   
   return { properties, loading, error }
@@ -141,17 +146,17 @@ export const useUI = () => {
     setSearchTerm: (term: string) => dispatch(setSearchTerm(term)),
     
     // Filter actions
-    setPropertyFilters: (filters: any) => dispatch(setPropertyFilters(filters)),
+    setPropertyFilters: (filters: { minPrice?: number; maxPrice?: number; year?: number; ownerId?: string }) => dispatch(setPropertyFilters(filters)),
     clearPropertyFilters: () => dispatch(clearPropertyFilters()),
     
     // Modal actions
-    openEditOwnerModal: (owner: any) => dispatch(openEditOwnerModal(owner)),
+    openEditOwnerModal: (owner: Owner) => dispatch(openEditOwnerModal(owner)),
     closeEditOwnerModal: () => dispatch(closeEditOwnerModal()),
-    openDeleteOwnerModal: (owner: any) => dispatch(openDeleteOwnerModal(owner)),
+    openDeleteOwnerModal: (owner: Owner) => dispatch(openDeleteOwnerModal(owner)),
     closeDeleteOwnerModal: () => dispatch(closeDeleteOwnerModal()),
-    openEditPropertyModal: (property: any) => dispatch(openEditPropertyModal(property)),
+    openEditPropertyModal: (property: Property) => dispatch(openEditPropertyModal(property)),
     closeEditPropertyModal: () => dispatch(closeEditPropertyModal()),
-    openDeletePropertyModal: (property: any) => dispatch(openDeletePropertyModal(property)),
+    openDeletePropertyModal: (property: Property) => dispatch(openDeletePropertyModal(property)),
     closeDeletePropertyModal: () => dispatch(closeDeletePropertyModal()),
     
     // Loading actions

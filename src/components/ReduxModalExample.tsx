@@ -3,6 +3,7 @@
 import { useUI, useOwnerMutations } from '@/hooks'
 import { Button } from '@/components/ui/button'
 import { Edit, Trash2 } from 'lucide-react'
+import { Owner } from '@/interfaces'
 
 // Ejemplo de cómo usar los modales con Redux
 export default function ReduxModalExample() {
@@ -24,14 +25,15 @@ export default function ReduxModalExample() {
     name: 'Juan Pérez',
     address: 'Av. Las Condes 123',
     birthday: '1990-01-01',
+    photo: '',
   }
 
   const handleEditOwner = () => {
-    openEditOwnerModal(exampleOwner)
+    openEditOwnerModal(exampleOwner as Owner)
   }
 
   const handleDeleteOwner = () => {
-    openDeleteOwnerModal(exampleOwner)
+    openDeleteOwnerModal(exampleOwner as Owner)
   }
 
   const handleConfirmDelete = async () => {

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { Owner, Property } from '@/interfaces'
 
 interface UIState {
   // Loading states
@@ -12,8 +13,8 @@ interface UIState {
   isDeletePropertyModalOpen: boolean
   
   // Selected items for modals
-  selectedOwner: any | null
-  selectedProperty: any | null
+  selectedOwner: Owner | null
+  selectedProperty: Property | null
   
   // Search and filters
   searchTerm: string
@@ -71,7 +72,7 @@ const uiSlice = createSlice({
     },
     
     // Modal actions
-    openEditOwnerModal: (state, action: PayloadAction<any>) => {
+    openEditOwnerModal: (state, action: PayloadAction<Owner>) => {
       state.isEditOwnerModalOpen = true
       state.selectedOwner = action.payload
     },
@@ -80,7 +81,7 @@ const uiSlice = createSlice({
       state.selectedOwner = null
     },
     
-    openDeleteOwnerModal: (state, action: PayloadAction<any>) => {
+    openDeleteOwnerModal: (state, action: PayloadAction<Owner>) => {
       state.isDeleteOwnerModalOpen = true
       state.selectedOwner = action.payload
     },
@@ -89,7 +90,7 @@ const uiSlice = createSlice({
       state.selectedOwner = null
     },
     
-    openEditPropertyModal: (state, action: PayloadAction<any>) => {
+    openEditPropertyModal: (state, action: PayloadAction<Property>) => {
       state.isEditPropertyModalOpen = true
       state.selectedProperty = action.payload
     },
@@ -98,7 +99,7 @@ const uiSlice = createSlice({
       state.selectedProperty = null
     },
     
-    openDeletePropertyModal: (state, action: PayloadAction<any>) => {
+    openDeletePropertyModal: (state, action: PayloadAction<Property>) => {
       state.isDeletePropertyModalOpen = true
       state.selectedProperty = action.payload
     },

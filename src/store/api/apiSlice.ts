@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { Owner, Property, PropertyImage, PropertyTrace } from '@/interfaces'
+import { Owner, Property } from '@/interfaces'
 import { PropertyWithDetailsDto, PropertyTraceDto, PropertyImageDto } from '@/services/types'
 
 // Base query with error handling
@@ -15,22 +15,10 @@ const baseQuery = fetchBaseQuery({
   },
 })
 
-// Enhanced base query with retry logic
-const baseQueryWithRetry = async (args: any, api: any, extraOptions: any) => {
-  let result = await baseQuery(args, api, extraOptions)
-  
-  if (result.error && result.error.status === 401) {
-    // Handle unauthorized access
-    localStorage.removeItem('token')
-    // Redirect to login if needed
-  }
-  
-  return result
-}
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: baseQueryWithRetry,
+  baseQuery: baseQuery,
   tagTypes: ['Owner', 'Property', 'PropertyTrace', 'PropertyImage', 'Stats'],
   endpoints: (builder) => ({
     // Owners endpoints
@@ -84,7 +72,7 @@ export const apiSlice = createApi({
     }),
     
     // Properties endpoints
-    getProperties: builder.query<Property[], { search?: string; filters?: any }>({
+    getProperties: builder.query<Property[], { search?: string; filters?: { minPrice?: number; maxPrice?: number; year?: number; ownerId?: string } }>({
       query: ({ search, filters }) => {
         const params = new URLSearchParams()
         if (search) params.append('Name', search)

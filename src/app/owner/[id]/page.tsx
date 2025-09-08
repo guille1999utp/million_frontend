@@ -92,11 +92,11 @@ export default function OwnerDetailPage() {
     })
   }
 
-  const totalValue = properties.reduce((sum: number, property: any) => sum + (property.price || 0), 0)
+  const totalValue = properties.reduce((sum: number, property: PropertyWithDetailsDto) => sum + (property.price || 0), 0)
   const averagePrice = properties.length > 0 ? totalValue / properties.length : 0
 
   // Calculate total transactions from traces
-  const allTraces = properties.flatMap((property: any) => property.traces || [])
+  const allTraces = properties.flatMap((property: PropertyWithDetailsDto) => property.traces || [])
   const totalTransactions = allTraces.length
 
   return (
@@ -267,7 +267,7 @@ export default function OwnerDetailPage() {
               <CardContent>
                 {properties.length > 0 ? (
                   <div className="space-y-4">
-                    {properties.map((property: any, index: number) => {
+                    {properties.map((property: PropertyWithDetailsDto, index: number) => {
                       const primaryImage = property.images && property.images.length > 0 ? property.images[0] : null
                       const latestTrace = property.traces && property.traces.length > 0 ? property.traces[0] : null
 
