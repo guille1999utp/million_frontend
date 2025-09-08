@@ -13,8 +13,6 @@ import {
   DollarSign,
   Home,
   User,
-  Phone,
-  Mail,
   History,
   ChevronLeft,
   ChevronRight,

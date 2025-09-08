@@ -72,10 +72,6 @@ export function useProperties(filters?: UsePropertiesFilters) {
       clearTimeout(debounceRef.current);
     }
 
-    // Si hay filtros activos, mostrar loading después del debounce
-    const hasActiveFilters = filters?.Name || filters?.Address || 
-                            filters?.MinPrice !== undefined || filters?.MaxPrice !== undefined;
-
     // Crear un nuevo timeout para el debounce
     debounceRef.current = setTimeout(() => {
       fetchProperties();

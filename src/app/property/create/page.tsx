@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { Suspense } from "react"
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -18,6 +19,7 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { toast } from "sonner"
 import { useOwners } from "@/hooks"
+import Image from "next/image"
 
 const propertySchema = z.object({
   name: z
@@ -55,7 +57,7 @@ const propertySchema = z.object({
 
 type PropertyFormData = z.infer<typeof propertySchema>
 
-export default function CreatePropertyPage() {
+function CreatePropertyPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const preselectedOwnerId = searchParams.get("ownerId")
@@ -74,7 +76,6 @@ export default function CreatePropertyPage() {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
     control,
   } = useForm<PropertyFormData>({
     resolver: zodResolver(propertySchema),
@@ -510,9 +511,11 @@ export default function CreatePropertyPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {imagePreviews.map((preview, index) => (
                         <div key={index} className="relative group">
-                          <img
+                          <Image
                             src={preview}
                             alt={`Preview ${index + 1}`}
+                            width={400}
+                            height={128}
                             className="w-full h-32 object-cover rounded-lg"
                           />
                           <button
@@ -641,5 +644,20 @@ export default function CreatePropertyPage() {
         </motion.div>
       </div>
     </div>
+  )
+}
+
+export default function CreatePropertyPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto"></div>
+          <p className="text-white/60">Cargando...</p>
+        </div>
+      </div>
+    }>
+      <CreatePropertyPageContent />
+    </Suspense>
   )
 }

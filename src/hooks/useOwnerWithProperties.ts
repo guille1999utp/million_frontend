@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ownerService } from '../services';
 import { OwnerWithPropertiesDto } from '../services/types';
 
@@ -15,7 +15,7 @@ export function useOwnerWithProperties(ownerId: string) {
     error: null,
   });
 
-  const fetchOwnerWithProperties = async () => {
+  const fetchOwnerWithProperties = useCallback(async () => {
     if (!ownerId) {
       setState({
         owner: null,
@@ -42,11 +42,11 @@ export function useOwnerWithProperties(ownerId: string) {
         error: error instanceof Error ? error.message : 'Error al cargar el propietario',
       }));
     }
-  };
+  }, [ownerId]);
 
   useEffect(() => {
     fetchOwnerWithProperties();
-  }, [ownerId]);
+  }, [ownerId, fetchOwnerWithProperties]);
 
   return { ...state, refetch: fetchOwnerWithProperties };
 }

@@ -1,8 +1,8 @@
 // Exportar todos los servicios
-import { ownerService, OwnerService } from './ownerService';
-import { propertyService, PropertyService } from './propertyService';
-import { propertyImageService, PropertyImageService } from './propertyImageService';
-import { propertyTraceService, PropertyTraceService } from './propertyTraceService';
+import { ownerService } from './ownerService';
+import { propertyService } from './propertyService';
+import { propertyImageService } from './propertyImageService';
+import { propertyTraceService } from './propertyTraceService';
 
 export { ownerService, propertyService, propertyImageService, propertyTraceService };
 export { apiClient, ApiClient } from './apiClient';

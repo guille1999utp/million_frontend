@@ -12,7 +12,6 @@ import Image from "next/image";
 import AnimatedButton from "@/components/AnimatedButton/AnimatedButton";
 import FeaturedProjects from "@/components/FeaturedProjects/FeaturedProjects";
 import Copy from "@/components/Copy/Copy";
-import CTAWindow from "@/components/CTAWindow";
 import { useStats } from "@/hooks";
 
 let isInitialLoad = true;

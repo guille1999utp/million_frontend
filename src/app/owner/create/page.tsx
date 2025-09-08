@@ -17,6 +17,7 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { toast } from "sonner"
 import { ownerService } from "@/services"
+import Image from "next/image"
 
 const ownerSchema = z.object({
   name: z
@@ -52,7 +53,6 @@ export default function CreateOwnerPage() {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
   } = useForm<OwnerFormData>({
     resolver: zodResolver(ownerSchema),
     defaultValues: {
@@ -209,9 +209,11 @@ export default function CreateOwnerPage() {
                     <div className="space-y-4 text-center">
                       <div className="w-32 h-32 mx-auto bg-white/10 rounded-full flex items-center justify-center overflow-hidden border-2 border-dashed border-white/20 hover:border-white/40 transition-colors">
                         {photoPreview ? (
-                          <img
+                          <Image
                             src={photoPreview || "/placeholder.svg"}
                             alt="Preview"
+                            width={128}
+                            height={128}
                             className="w-full h-full object-cover"
                           />
                         ) : (

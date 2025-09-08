@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { AlertTriangle, Trash2, X, Home } from "lucide-react"
+import { AlertTriangle, Trash2, X } from "lucide-react"
 import { toast } from "sonner"
 import { propertyService } from "@/services"
 import { PropertyWithDetailsDto } from "@/services/types"

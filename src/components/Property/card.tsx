@@ -3,9 +3,9 @@
 import type { Property } from "@/lib/data"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Bed, Bath, Square } from "lucide-react"
+import { MapPin, Square } from "lucide-react"
 import { motion } from "framer-motion"
-import { getPrimaryImage, getOwnerById } from "@/lib/data"
+import { getOwnerById } from "@/lib/data"
 import Image from "next/image"
 
 interface PropertyCardProps {

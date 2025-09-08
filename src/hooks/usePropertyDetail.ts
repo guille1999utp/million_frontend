@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { propertyService } from '../services';
 import { PropertyWithDetailsDto } from '../services/types';
 
@@ -15,7 +15,7 @@ export function usePropertyDetail(propertyId: string) {
     error: null,
   });
 
-  const fetchPropertyDetail = async () => {
+  const fetchPropertyDetail = useCallback(async () => {
     if (!propertyId) {
       setState({
         property: null,
@@ -42,11 +42,11 @@ export function usePropertyDetail(propertyId: string) {
         error: error instanceof Error ? error.message : 'Error al cargar la propiedad',
       }));
     }
-  };
+  }, [propertyId]);
 
   useEffect(() => {
     fetchPropertyDetail();
-  }, [propertyId]);
+  }, [propertyId, fetchPropertyDetail]);
 
   return { ...state, refetch: fetchPropertyDetail };
 }

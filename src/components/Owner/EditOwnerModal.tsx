@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -47,7 +47,6 @@ export function EditOwnerModal({ isOpen, onClose, owner, onSuccess }: EditOwnerM
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
     reset,
   } = useForm<OwnerEditFormData>({
     resolver: zodResolver(ownerEditSchema),

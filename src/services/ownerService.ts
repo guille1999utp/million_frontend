@@ -57,7 +57,7 @@ export class OwnerService {
     }
     
     try {
-      const result = await this.client.request(`/Owner/${id}`, {
+      await this.client.request(`/Owner/${id}`, {
         method: 'PUT',
         body: ownerData
       });
@@ -82,7 +82,7 @@ export class OwnerService {
     }
     
     try {
-      const result = await this.client.request(`/Owner/${id}`, {
+      await this.client.request(`/Owner/${id}`, {
         method: 'DELETE'
       });
       

@@ -3,7 +3,6 @@ import { Property } from '../interfaces';
 import { 
   PropertyCreateDto, 
   PropertyUpdateDto, 
-  PropertyResponseDto, 
   PropertyWithDetailsDto, 
   PropertyFilters 
 } from './types';
@@ -79,7 +78,7 @@ export class PropertyService {
     }
     
     try {
-      const result = await this.client.request(`/Property/${id}`, {
+      await this.client.request(`/Property/${id}`, {
         method: 'PUT',
         body: propertyData
       });
@@ -102,7 +101,7 @@ export class PropertyService {
     }
     
     try {
-      const result = await this.client.request(`/Property/${id}`, {
+      await this.client.request(`/Property/${id}`, {
         method: 'DELETE'
       });
       

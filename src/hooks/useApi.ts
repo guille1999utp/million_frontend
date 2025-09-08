@@ -1,17 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 // URL base de la API desde variable de entorno
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-million-htf4bghdfsd5eadt.canadacentral-01.azurewebsites.net';
 
-interface ApiResponse<T> {
-  data: T | null;
-  loading: boolean;
-  error: string | null;
-}
 
 interface ApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  body?: any | FormData;
+  body?: unknown | FormData;
   headers?: Record<string, string>;
   isFormData?: boolean;
 }
@@ -21,7 +16,7 @@ export function useApi<T>(endpoint: string, options: ApiOptions = {}) {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -38,14 +33,14 @@ export function useApi<T>(endpoint: string, options: ApiOptions = {}) {
       if (options.body && options.method !== 'GET') {
         if (options.isFormData || options.body instanceof FormData) {
           // Para FormData, no establecer Content-Type (el navegador lo hace automáticamente)
-          config.body = options.body;
+          config.body = options.body as BodyInit;
         } else {
           // Para JSON
           config.headers = {
             'Content-Type': 'application/json',
             ...options.headers,
           };
-          config.body = JSON.stringify(options.body);
+          config.body = JSON.stringify(options.body) as BodyInit;
         }
       } else if (!options.isFormData && !(options.body instanceof FormData)) {
         // Solo establecer Content-Type para JSON si no es FormData
@@ -68,13 +63,13 @@ export function useApi<T>(endpoint: string, options: ApiOptions = {}) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [endpoint, options]);
 
   useEffect(() => {
     if (endpoint) {
       fetchData();
     }
-  }, [endpoint]);
+  }, [endpoint, fetchData]);
 
   return {
     data,
@@ -109,14 +104,14 @@ export function useApiRequest() {
       if (options.body && options.method !== 'GET') {
         if (options.isFormData || options.body instanceof FormData) {
           // Para FormData, no establecer Content-Type (el navegador lo hace automáticamente)
-          config.body = options.body;
+          config.body = options.body as BodyInit;
         } else {
           // Para JSON
           config.headers = {
             'Content-Type': 'application/json',
             ...options.headers,
           };
-          config.body = JSON.stringify(options.body);
+          config.body = JSON.stringify(options.body) as BodyInit;
         }
       } else if (!options.isFormData && !(options.body instanceof FormData)) {
         // Solo establecer Content-Type para JSON si no es FormData

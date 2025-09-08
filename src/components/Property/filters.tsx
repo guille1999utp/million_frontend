@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, Filter, X, ChevronDown } from "lucide-react"
-import { propertyTypes, priceRanges } from "@/lib/data"
+import { priceRanges } from "@/lib/data"
 import { motion } from "framer-motion"
 
 export interface FilterState {

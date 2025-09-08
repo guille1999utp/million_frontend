@@ -8,14 +8,11 @@ import {
   ArrowLeft,
   MapPin,
   Calendar,
-  Phone,
-  Mail,
   Home,
   Building2,
   Plus,
   TrendingUp,
   DollarSign,
-  Award,
   BarChart3,
   Edit,
   Trash2,
@@ -28,6 +25,7 @@ import { useOwnerWithProperties } from "@/hooks"
 import { EditOwnerModal, DeleteOwnerModal } from "@/components/Owner"
 import { DeletePropertyModal, EditPropertyModal } from "@/components/Property"
 import { useState } from "react"
+import { PropertyWithDetailsDto } from "@/services/types"
 
 export default function OwnerDetailPage() {
   const params = useParams()
@@ -37,7 +35,7 @@ export default function OwnerDetailPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeletePropertyModalOpen, setIsDeletePropertyModalOpen] = useState(false)
   const [isEditPropertyModalOpen, setIsEditPropertyModalOpen] = useState(false)
-  const [selectedProperty, setSelectedProperty] = useState<any>(null)
+  const [selectedProperty, setSelectedProperty] = useState<PropertyWithDetailsDto | null>(null)
 
   const { owner, loading, error, refetch } = useOwnerWithProperties(ownerId)
 

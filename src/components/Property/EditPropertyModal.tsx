@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { 
   X, 
   Plus, 
@@ -15,12 +14,12 @@ import {
   ImageIcon, 
   Trash2, 
   Edit,
-  AlertCircle,
   Check
 } from "lucide-react"
 import { toast } from "sonner"
 import { propertyService, propertyImageService, propertyTraceService } from "@/services"
 import { PropertyWithDetailsDto } from "@/services/types"
+import Image from "next/image"
 
 interface EditPropertyModalProps {
   isOpen: boolean
@@ -73,7 +72,7 @@ export function EditPropertyModal({ isOpen, onClose, property, onSuccess }: Edit
       setImagePreviews([])
       setHasChanges(false) // Resetear el estado de cambios
     }
-  }, [isOpen, property.id]) // Solo dependemos del ID de la propiedad, no de toda la propiedad
+  }, [isOpen, property.id, property.address, property.codeInternal, property.images, property.name, property.price, property.traces, property.year])
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
@@ -359,9 +358,11 @@ export function EditPropertyModal({ isOpen, onClose, property, onSuccess }: Edit
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {existingImages.map((image) => (
                     <div key={image.id} className="relative group">
-                      <img
+                      <Image
                         src={image.file || "/placeholder.svg"}
                         alt="Imagen de propiedad"
+                        width={400}
+                        height={128}
                         className="w-full h-32 object-cover rounded-lg"
                       />
                       <button
@@ -412,9 +413,11 @@ export function EditPropertyModal({ isOpen, onClose, property, onSuccess }: Edit
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {imagePreviews.map((preview, index) => (
                       <div key={index} className="relative group">
-                        <img
+                        <Image
                           src={preview}
                           alt={`Preview ${index + 1}`}
+                          width={400}
+                          height={96}
                           className="w-full h-24 object-cover rounded-lg"
                         />
                         <button

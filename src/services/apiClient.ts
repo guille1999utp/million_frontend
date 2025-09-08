@@ -3,7 +3,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-million-htf
 
 interface ApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  body?: any | FormData;
+  body?: unknown | FormData;
   headers?: Record<string, string>;
   isFormData?: boolean;
 }
@@ -35,14 +35,14 @@ export class ApiClient {
       if (options.body && options.method !== 'GET') {
         if (options.isFormData || options.body instanceof FormData) {
           // Para FormData, no establecer Content-Type (el navegador lo hace automáticamente)
-          config.body = options.body;
+          config.body = options.body as BodyInit;
         } else {
           // Para JSON
           config.headers = {
             'Content-Type': 'application/json',
             ...options.headers,
           };
-          config.body = JSON.stringify(options.body);
+          config.body = JSON.stringify(options.body) as BodyInit;
         }
       } else if (!options.isFormData && !(options.body instanceof FormData)) {
         // Solo establecer Content-Type para JSON si no es FormData

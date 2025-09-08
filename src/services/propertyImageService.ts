@@ -2,8 +2,7 @@ import { apiClient } from './apiClient';
 import { PropertyImage } from '../interfaces';
 import { 
   PropertyImageCreateDto, 
-  PropertyImageUpdateDto, 
-  PropertyImageDto 
+  PropertyImageUpdateDto
 } from './types';
 
 export class PropertyImageService {

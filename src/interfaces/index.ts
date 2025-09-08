@@ -1,4 +1,4 @@
-export { Owner } from './owner';
-export { Property } from './properties';
-export { PropertyImage } from './propertyImage';
-export { PropertyTrace } from './propertyTrace';
+export type { Owner } from './owner';
+export type { Property } from './properties';
+export type { PropertyImage } from './propertyImage';
+export type { PropertyTrace } from './propertyTrace';

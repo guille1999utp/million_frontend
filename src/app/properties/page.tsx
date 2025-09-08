@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react"
 import { priceRanges } from "@/lib/data"
 import { Button } from "@/components/ui/button"
-import { Home, Building2, ArrowRight, Menu, Users, Plus } from "lucide-react"
+import { Building2 } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { FilterState, PropertyFilters } from "@/components/Property/filters"
@@ -45,7 +45,7 @@ export default function HomePage() {
 
   // Convertir filtros de UI a filtros de API
   const apiFilters = useMemo(() => {
-    const apiFilters: any = {};
+    const apiFilters: Record<string, string | number> = {};
     
     if (filters.search) {
       apiFilters.Name = filters.search;
